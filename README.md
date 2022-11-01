@@ -21,6 +21,11 @@ book-time -ticket ABC-1234 -duration 3h15m -date 28-10-22 -now
 book-time -ticket ABC-1234 -duration 3h15m -date 28-10-22 -at 12:45
 ```
 
+If you don't want to set a specific time and instead always book at the same time, you can just use an alias:
+```
+alias book-time='book-time -at 10:00'
+```
+
 ## Completion
 
 `source <(book-time completion)`
