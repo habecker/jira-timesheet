@@ -127,7 +127,7 @@ class FileArgumentParser(object):
         for k,v in _arguments.items():
             if k == 'help':
                 for k, arg in self.arguments.items():
-                    print("Argument --%s {value}" % k)
+                    print("Argument -%s {value}" % k)
                     print("\ttype: %s" % arg["type"])
                     if "default" in arg:
                         print("\tdefault: %s" % arg["default"])

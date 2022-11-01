@@ -1,4 +1,5 @@
+pyinstaller
+pyinstaller-hooks-contrib
 python-dateutil
 PyYAML
 requests
-py2g-utils
