@@ -1,0 +1,109 @@
+#!python3
+
+import datetime, time
+from dateutil import tz
+import requests
+import base64
+import os
+
+if not 'JIRA_URL' in os.environ:
+    print('Environment variable JIRA_URL must be set')
+    exit(1)
+
+if not 'JIRA_USER' in os.environ:
+    print('Environment variable JIRA_USER must be set')
+    exit(1)
+
+if not 'JIRA_TOKEN' in os.environ:
+    print('Environment variable JIRA_TOKEN must be set')
+    exit(1)
+
+JIRA_USER = os.environ['JIRA_USER']
+JIRA_TOKEN = os.environ['JIRA_TOKEN']
+JIRA_URL = os.environ['JIRA_URL']
+
+# Create an authentication object,using
+# registered emailID, and, token received.
+auth = f'{JIRA_USER}:{JIRA_TOKEN}'.encode('ascii')
+auth = base64.b64encode(auth)
+auth = auth.decode('ascii')
+# The Header parameter, should mention, the
+# desired format of data.
+headers = {
+    "Content-Type": "application/json",
+    "Accept": "application/json",
+    "Authorization": f"Basic {auth}"
+}
+headers
+
+
+def logTime(ticket:str, duration:str, dt:datetime.datetime):
+    dt = dt.strftime('%Y-%m-%dT%T.000') + \
+        '{}{:0>2}{:0>2}'.format('-' if time.altzone > 0 else '+', abs(time.altzone) // 3600, abs(time.altzone // 60) % 60)
+    # URL to Search all issues.
+    url = f"{JIRA_URL}rest/internal/3/issue/{ticket}/worklog"
+
+    print(ticket, dt, duration, url)
+
+    response = requests.request(
+        "POST",
+        url,
+        headers=headers,
+        data=f'{{"timeSpent":"{duration}","comment":{{"type":"doc","version":1,"content":[]}},"started":"{dt}"}}'
+    )
+
+    if not 200 <= response.status_code <= 201:
+        raise Exception(f'Unexpected status code: {response.status_code}')
+
+    print("success")
+
+from arguments import FileArgumentParser, ArgumentError
+import sys
+import re
+
+duration_re = re.compile(r'^((?P<hour>\d+)h)?(?P<minute>\d{1,2})m$')
+
+if __name__ == '__main__':
+    dirname = os.path.dirname(__file__)
+    
+    if len(sys.argv) > 1 and sys.argv[1] == 'completion':
+        with open(os.path.join(dirname, 'register-completion.txt'), 'r') as f:
+            print(f.read(), end="")
+        sys.exit(0)
+
+    options = FileArgumentParser('book-time.yaml', basepath=dirname).parse()
+
+
+    duration = options.duration
+    match = duration_re.match(duration)
+
+    if not match:
+        raise ArgumentError('duration')
+    
+    hour = match.group('hour')
+    if not hour:
+        hour = 0
+    minute = match.group('minute')
+    duration = f'{hour}h {minute}m'
+
+    # date
+    if options.today:
+        date = datetime.date.today()
+    elif options.yesterday:
+        date = datetime.date.today() - datetime.timedelta(days=1)
+    elif options.date:
+        date = datetime.datetime.strptime(options.date, '%d-%m-%y').date()
+    else:
+        raise ArgumentError('One of -today, -yesterday or -date must be set')
+
+    # time
+    if options.now:
+        t = datetime.datetime.now().time()
+    elif options.at:
+        t = datetime.datetime.strptime(options.at, '%H:%M').time()
+    else:
+        raise ArgumentError('One of -now or -at must be set')
+
+    moment = datetime.datetime.combine(date, t)
+
+    logTime(ticket=options.ticket, duration=duration, dt=moment)
