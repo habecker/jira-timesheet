@@ -23,4 +23,4 @@ book-time -ticket ABC-1234 -duration 3h15m -date 28-10-22 -at 12:45
 
 ## Completion
 
-`source <(book-time completion)
+`source <(book-time completion)`
