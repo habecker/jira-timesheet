@@ -38,12 +38,12 @@ headers
 
 
 def logTime(ticket:str, duration:str, dt:datetime.datetime):
+    
+    
     dt = dt.strftime('%Y-%m-%dT%T.000') + \
-        '{}{:0>2}{:0>2}'.format('-' if time.altzone > 0 else '+', abs(time.altzone) // 3600, abs(time.altzone // 60) % 60)
+        '{}{:0>2}{:0>2}'.format('-' if time.timezone > 0 else '+', abs(time.timezone) // 3600, abs(time.timezone // 60) % 60)
     # URL to Search all issues.
     url = f"{JIRA_URL}rest/internal/3/issue/{ticket}/worklog"
-
-    print(ticket, dt, duration, url)
 
     response = requests.request(
         "POST",
@@ -55,11 +55,12 @@ def logTime(ticket:str, duration:str, dt:datetime.datetime):
     if not 200 <= response.status_code <= 201:
         raise Exception(f'Unexpected status code: {response.status_code}')
 
-    print("success")
+    print(f"Booked {duration} at {dt} on {ticket}")
 
 from arguments import FileArgumentParser, ArgumentError
 import sys
 import re
+
 
 duration_re = re.compile(r'^((?P<hour>\d+)h)?(?P<minute>\d{1,2})m$')
 
