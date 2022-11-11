@@ -1,4 +1,4 @@
-# jira-timesheet
+# jira-timetracking-cli
 
 This tool can be used to book times into JIRA issues. This tool uses the internal rest api (v3) of JIRA and therefore can be subject to change. Use it on your own risk!
 
