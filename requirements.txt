@@ -1,5 +1,4 @@
-pyinstaller
-pyinstaller-hooks-contrib
 python-dateutil
 PyYAML
 requests
+build

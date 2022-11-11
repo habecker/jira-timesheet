@@ -1,5 +1,5 @@
 #!python3
-#pylint: disable=C0103
+#pylint: disable=C0116
 
 """
 This tool can be used to book times into JIRA issues.
@@ -18,7 +18,7 @@ import time
 
 import requests
 
-from arguments import ArgumentError, FileArgumentParser
+from jira_timesheet_cli.arguments import ArgumentError, FileArgumentParser
 
 if not 'JIRA_URL' in os.environ:
     print('Environment variable JIRA_URL must be set')
@@ -79,7 +79,7 @@ def _log_time(ticket: str, log_duration: str, log_at: datetime.datetime, dryrun:
 
 duration_re = re.compile(r'^((?P<hour>\d+)h)?((?P<minute>\d{1,2})m)?$')
 
-if __name__ == '__main__':
+def main():
     dirname = os.path.dirname(__file__)
 
     if len(sys.argv) > 1 and sys.argv[1] == 'completion':
@@ -126,3 +126,6 @@ if __name__ == '__main__':
     moment = datetime.datetime.combine(date, t)
 
     _log_time(ticket=options.ticket, log_duration=duration, log_at=moment, dryrun=options.dryrun)
+
+if __name__ == '__main__':
+    main()
