@@ -4,7 +4,7 @@ This tool can be used to book times into JIRA issues. This tool uses the interna
 
 ## Installation
 
-Create new virtualenv `virtualenv ./venv`, activate it `source venv/bin/activate` install all requirements `pip install -r requirements.txt`. Then build the project using `pyinstaller book-time.spec`. Add `dist/book-time` to your `$PATH` and use it.
+`pip install jira-timesheet-cli`
 
 ## Usage
 
